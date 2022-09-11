@@ -104,13 +104,13 @@ const HomePage = () => {
       </form>
       <div>
         {txnHash.length > 0 && (
-          <div className="flex flex-col justify-center ">
-            <button className="font-bold, justify-self-center ">
+          <div className="flex flex-col justify-center">
+            <label className="font-bold, justify-self-center p-2">
               TRANSACTION HASH (you can check on bscscan)
-            </button>
-            <button className="flex rounded-lg justify-self-center items-center bg-green-100 font-bold p-2">
+            </label>
+            <label className="flex rounded-lg justify-self-center items-center bg-green-100 font-bold p-2">
               {txnHash}
-            </button>
+            </label>
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import HomePage from "./components/HomePage";
 import { ethers } from "ethers";
 import Axios from "axios";
+import { THENTIC_API_KEY, NFT_CONTRACT } from "./secrete.json";
 
 interface Props {
   handlePay: React.FormEventHandler;
@@ -11,6 +12,7 @@ interface Props {
   connectWallet: React.MouseEventHandler<HTMLButtonElement>;
   userAccount: string;
   walletConnected: boolean;
+  txnHash: string;
 }
 
 export const TokenContext = React.createContext({} as Props);
@@ -19,53 +21,35 @@ function App() {
   let [bill, setBill] = useState(0);
   let [userAccount, setUserAccount] = useState("");
   let [walletConnected, setWalletConnected] = useState(false);
-  const merchant = "0xf40072D5D56dd8C6964a11a23D0186c2b64491DF";
+  let [txnHash, setTxnHash] = useState("");
+  const merchant = "0x2F3f14252F0c31aE2dB57dbDF59a263c38d4fc2D";
 
   const mintNftOp = {
     method: "POST",
     url: "https://thentic.p.rapidapi.com/nfts/mint",
     headers: {
       "content-type": "application/json",
-      "X-RapidAPI-Key": "SmyxNsnYro8cvpqVBYD4Qrc8lORKW69C",
+      "X-RapidAPI-Key": THENTIC_API_KEY,
       "X-RapidAPI-Host": "thentic.p.rapidapi.com",
     },
-    data: `{"key":"SmyxNsnYro8cvpqVBYD4Qrc8lORKW69C","chain_id":97,"contract":"0x68ae8a934ada6018888486609e40e6144e22f701","nft_id":0,"nft_data":"<Data>","to":"0xf40072D5D56dd8C6964a11a23D0186c2b64491DF"}`,
+    data: {
+      key: THENTIC_API_KEY,
+      chain_id: 97,
+      contract: NFT_CONTRACT,
+      nft_id: 0,
+      nft_data: "<Data>",
+      to: `${userAccount}`,
+    },
   };
 
   const mintNFT = async () => {
-    Axios.request(mintNftOp)
-      .then(function (response) {
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+    let mint = await Axios.request(mintNftOp);
+    alert(`Minting NFT, ID = ${mint.data.request_id}`);
   };
-
-  // const options = {
-  //   method: "GET",
-  //   url: "https://thentic.p.rapidapi.com/contracts",
-  //   params: { key: "SmyxNsnYro8cvpqVBYD4Qrc8lORKW69C", chain_id: "97" },
-  //   headers: {
-  //     "X-RapidAPI-Key": "SmyxNsnYro8cvpqVBYD4Qrc8lORKW69C",
-  //     "X-RapidAPI-Host": "thentic.p.rapidapi.com",
-  //   },
-  // };
-
-  // Axios.request(options)
-  //   .then(function (response) {
-  //     console.log(response.data);
-  //   })
-  //   .catch(function (error) {
-  //     console.error(error);
-  //   });
-
-  //0x68ae8a934ada6018888486609e40e6144e22f701
 
   const connectWallet: React.MouseEventHandler = async (e) => {
     e.preventDefault();
     if (window.ethereum) {
-      console.log("connecting waallet");
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
@@ -92,7 +76,7 @@ function App() {
   const payBill = async (amount: number) => {
     try {
       const pAmount = ethers.utils.parseEther(amount.toString());
-      await window.ethereum.request({
+      let payment = await window.ethereum.request({
         method: "eth_sendTransaction",
         params: [
           {
@@ -103,6 +87,10 @@ function App() {
           },
         ],
       });
+      await payment;
+      setTxnHash(payment.toString());
+      console.log(payment);
+      alert("Payment successful. Click Ok to get an NFT reward.");
     } catch (error) {
       console.log(error);
       alert("Error making payment, please try again.");
@@ -125,6 +113,7 @@ function App() {
         walletConnected,
         connectWallet,
         handlePay,
+        txnHash,
       }}
     >
       <div>

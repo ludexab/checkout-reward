@@ -1,7 +1,6 @@
 import { Express } from "express";
 import { appendFile } from "fs";
 import path from "path";
-
 const App = Express();
 
 if (process.env.NODE_ENV === "production") {

@@ -4,8 +4,15 @@ import { TokenContext } from "../App";
 import { useContext } from "react";
 
 const HomePage = () => {
-  const { handlePay, bill, cash, userAccount, walletConnected, connectWallet } =
-    useContext(TokenContext);
+  const {
+    handlePay,
+    bill,
+    cash,
+    userAccount,
+    walletConnected,
+    connectWallet,
+    txnHash,
+  } = useContext(TokenContext);
   const dollarSign = " ETH ";
   return (
     <div className="bg-gray-200">
@@ -95,6 +102,18 @@ const HomePage = () => {
           </div>
         </div>
       </form>
+      <div>
+        {txnHash.length > 0 && (
+          <div className="flex flex-col justify-center ">
+            <button className="font-bold, justify-self-center ">
+              TRANSACTION HASH (you can check on bscscan)
+            </button>
+            <button className="flex rounded-lg justify-self-center items-center bg-green-100 font-bold p-2">
+              {txnHash}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
